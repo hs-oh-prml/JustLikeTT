@@ -231,7 +231,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+    // TEST
     fun init(){
         timeTable.setOnClickListener {
             var intent = Intent(this, SearchActivity::class.java)
