@@ -7,10 +7,11 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Gravity
-import android.view.Gravity.CENTER
-import android.view.Gravity.LEFT
+import android.view.Gravity.*
+import android.view.View.GONE
 import android.widget.*
 import androidx.core.view.marginEnd
 import androidx.core.view.marginTop
@@ -136,15 +137,26 @@ class MainActivity : AppCompatActivity() {
                 if(flag == 0){
                     val name = lect.lectName.split("(")[0]
                     val str = name + "\n" + j.room + "\n" + j.professor
-                    (cell as TextView).textSize = 8f
-                    (cell as TextView).text = str
+                    cell.textSize = 10f
+                    cell.text = str
                     cell.gravity = LEFT
+
+                    var param = GridLayout.LayoutParams()
+                    var rowSpan = GridLayout.spec(j.row, timeCellList.size, GridLayout.FILL)
+                    var colSpan = GridLayout.spec(j.col, 1, GridLayout.FILL)
+
+                    param.rowSpec = rowSpan
+                    param.columnSpec = colSpan
+                    cell.layoutParams = param
+                } else {
+                    cell.visibility = GONE
                 }
                 flag++
             }
 
         }
     }
+
     fun initView(weekList: List<String>){
 
 
@@ -160,11 +172,16 @@ class MainActivity : AppCompatActivity() {
                 param.height = GridLayout.LayoutParams.WRAP_CONTENT
                 param.width = GridLayout.LayoutParams.WRAP_CONTENT
                 param.setMargins(1)
-                param.setGravity(Gravity.CENTER)
+                param.setGravity(CENTER)
                 param.columnSpec = GridLayout.spec(j)
                 param.rowSpec = GridLayout.spec(i)
 
                 var textView = TextView(this)
+
+
+                var disp = DisplayMetrics()
+                var dwidth = disp.widthPixels
+                var dheight = disp.heightPixels
                 textView.gravity = CENTER
                 textView.setBackgroundResource(R.color.white)
 
@@ -176,10 +193,13 @@ class MainActivity : AppCompatActivity() {
                 if(i == 0 && j != 0){
                     var colSpan = GridLayout.spec(j, GridLayout.FILL, 1f)
                     param.columnSpec = colSpan
+                    textView.textSize = 10f
                     textView.text = weekList[j - 1]
                 }
                 if(i != 0 && j == 0){
                     if(i % 2 == 1){
+                        textView.gravity = TOP or RIGHT
+                        textView.textSize = 10f
                         if((9 + i / 2) > 12){
                             textView.text = ((9 + i / 2) % 12).toString()
                         } else {
@@ -201,8 +221,12 @@ class MainActivity : AppCompatActivity() {
                     }
                     param.rowSpec = rowSpan
                 }
-
+                if(i != 0 && j != 0){
+                    textView.width = (dwidth * (1/5) * 0.7).toInt()
+                    textView.height = (dheight * (1/24) * 0.8).toInt()
+                }
                 textView.layoutParams = param
+
                 timeTable.addView(textView)
             }
         }
