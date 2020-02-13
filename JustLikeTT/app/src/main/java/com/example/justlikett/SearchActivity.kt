@@ -9,9 +9,11 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Gravity
 import android.view.View
+import android.view.View.GONE
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.ContextCompat
@@ -138,12 +140,20 @@ class SearchActivity : AppCompatActivity() {
 
             override fun choiceLecture(lect: LectureItem) {
 //                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                refreshTable()
-                addTable(lect, 0, -1)
+                when(lect.timeNroom){
+                    "", " (MOOC)", " (e-러닝)", "(e-러닝)", "(서울e러닝)"-> {
+                        Toast.makeText(applicationContext, "강의시간 정보가 없습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                        refreshTable()
+                        addTable(lect, 0, -1)
+                    }
+                }
             }
 
             override fun choiceCancel(lect: LectureItem) {
 //                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                var timeNroomList = lect.timeNroom.split(",")
 
                 addTable(lect, 2, -1)
             }
@@ -244,18 +254,7 @@ class SearchActivity : AppCompatActivity() {
     fun addTable(lect:LectureItem, mode:Int, index:Int){
 
         // mode 0 : Choice, 1 : Select, 2 : Cancel
-
         // Parse Time&Room
-        if(lect.timeNroom  == ""){
-            Toast.makeText(this, "강의시간 정보가 없습니다.", Toast.LENGTH_SHORT).show()
-            return
-        }
-        var eLearningCheck = lect.timeNroom.split("(e-러닝)")
-        Log.d("E_check", eLearningCheck.toString())
-        if(eLearningCheck[0] == " "){
-            Toast.makeText(this, "강의시간이 없습니다.", Toast.LENGTH_SHORT).show()
-            return
-        }
 
         var timeNroomList = lect.timeNroom.split(",")
         for(i in timeNroomList){
@@ -275,24 +274,41 @@ class SearchActivity : AppCompatActivity() {
                 } else if(mode == 1) {
                     cell.setBackgroundColor(Color.parseColor(color[index]))
                     if(flag == 0){
+                        cell.setBackgroundColor(Color.parseColor(color[index]))
                         val name = lect.lectName.split("(")[0]
                         val str = name + "\n" + j.room + "\n" + j.professor
-                        (cell as TextView).textSize = 6f
-                        (cell as TextView).text = str
+                        cell.textSize = 10f
+                        cell.text = str
+                        cell.gravity = Gravity.LEFT
+
+                        var param = GridLayout.LayoutParams()
+                        var rowSpan = GridLayout.spec(j.row, timeCellList.size, GridLayout.FILL)
+                        var colSpan = GridLayout.spec(j.col, 1, GridLayout.FILL)
+
+                        param.rowSpec = rowSpan
+                        param.columnSpec = colSpan
+                        cell.layoutParams = param
+
+                    } else {
+                        cell.visibility = GONE
                     }
+
                     timeTableInfo[j.row - 1][j.col - 1] = lect
-                }
-                else {
-                    cell.setBackgroundResource(R.color.white)
                 }
                 flag++
             }
 
         }
+
     }
 
 
     fun initTable(weekList:List<String>){
+
+
+        var rowSpan = GridLayout.spec(GridLayout.UNDEFINED, 1, 1f)
+        var colSpan = GridLayout.spec(GridLayout.UNDEFINED, 1, 1f)
+        var gridParam = GridLayout.LayoutParams(rowSpan, colSpan)
 
         timeTable.columnCount = weekList.size + 1
         timeTable.rowCount = 23
@@ -307,6 +323,11 @@ class SearchActivity : AppCompatActivity() {
                 param.rowSpec = GridLayout.spec(i)
 
                 var textView = TextView(this)
+
+
+                var disp = DisplayMetrics()
+                var dwidth = disp.widthPixels
+                var dheight = disp.heightPixels
                 textView.gravity = Gravity.CENTER
                 textView.setBackgroundResource(R.color.white)
 
@@ -318,10 +339,13 @@ class SearchActivity : AppCompatActivity() {
                 if(i == 0 && j != 0){
                     var colSpan = GridLayout.spec(j, GridLayout.FILL, 1f)
                     param.columnSpec = colSpan
+                    textView.textSize = 10f
                     textView.text = weekList[j - 1]
                 }
                 if(i != 0 && j == 0){
                     if(i % 2 == 1){
+                        textView.gravity = Gravity.TOP or Gravity.RIGHT
+                        textView.textSize = 10f
                         if((9 + i / 2) > 12){
                             textView.text = ((9 + i / 2) % 12).toString()
                         } else {
@@ -331,7 +355,6 @@ class SearchActivity : AppCompatActivity() {
                 }
                 if(j != 0){
                     var colSpan = GridLayout.spec(j, GridLayout.FILL, 1f)
-
                     param.columnSpec = colSpan
                 }
                 if(i != 0){
@@ -344,13 +367,15 @@ class SearchActivity : AppCompatActivity() {
                     }
                     param.rowSpec = rowSpan
                 }
-
+                if(i != 0 && j != 0){
+                    textView.width = (dwidth * (1/5) * 0.7).toInt()
+                    textView.height = (dheight * (1/24) * 0.8).toInt()
+                }
                 textView.layoutParams = param
+
                 timeTable.addView(textView)
             }
-
         }
-
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
