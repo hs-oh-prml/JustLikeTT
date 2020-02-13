@@ -54,19 +54,19 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:id="@+id/radioGroup"
-        android:checkedButton="@id/mode_num"
+        android:checkedButton="@id/mode_name"
         >
-        <RadioButton
-            android:text="과목코드"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/mode_num"
-            />
         <RadioButton
             android:text="과목명"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/mode_name"
+            />
+        <RadioButton
+            android:text="과목코드"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/mode_num"
             />
         <RadioButton
             android:text="교수명"
@@ -76,16 +76,32 @@
             />
 
     </RadioGroup>
-    <TextView
-        android:layout_width="200dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:background="@drawable/ripple_effect"
-        android:textColor="#FFFFFF"
-        android:gravity="center"
-        android:text="전공 선택하기"
-        android:id="@+id/major"
-        />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        >
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:background="@drawable/ripple_effect"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:text="전공 선택하기"
+            android:id="@+id/major"
+            android:layout_marginRight="20dp"
+            />
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:spinnerMode="dialog"
+            android:id="@+id/spinner"
+            android:prompt="@string/prompt"
+            />
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

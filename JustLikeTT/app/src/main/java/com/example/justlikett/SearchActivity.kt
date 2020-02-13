@@ -12,9 +12,11 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.view.setMargins
@@ -38,7 +40,7 @@ class SearchActivity : AppCompatActivity() {
     var dbHelper = DBHelper(this)
     val REQUEST_MAJOR = 1111
 
-    lateinit var majorCode: String
+    var majorCode = ""
     var majorName = ""
     lateinit var weekList:List<String>
     lateinit var dataList:ArrayList<LectureItem>
@@ -53,10 +55,14 @@ class SearchActivity : AppCompatActivity() {
     lateinit var timeTableInfo:ArrayList<ArrayList<LectureItem>>
 
     lateinit var color: Array<String>
+    lateinit var pobtDivArray: Array<String>
+    var pobtDiv = "전체"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
         color = this.resources.getStringArray(R.array.colorList)
+        pobtDivArray = this.resources.getStringArray(R.array.pobtDiv)
 
         pref = this.getSharedPreferences("myData", Activity.MODE_PRIVATE)
         edit = pref.edit()
@@ -99,6 +105,33 @@ class SearchActivity : AppCompatActivity() {
     }
 
     fun init(){
+
+        // Spinner Init
+        var s_adapter = ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, pobtDivArray)
+        spinner.adapter = s_adapter
+        spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+//                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+//                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("이수구분", pobtDivArray[p2])
+                pobtDiv = pobtDivArray[p2]
+                if(pobtDiv == "심교" || pobtDiv == "기교" ){
+                    Log.v("test", pobtDiv)
+                    dataList = dbHelper.getList(null, pobtDiv)
+                } else {
+                    dataList = dbHelper.getList(majorCode, pobtDiv)
+                }
+                adapter = LectRecyclerViewAdapter(applicationContext, dataList, listener)
+                recyclerView.adapter = adapter
+
+
+            }
+        }
+
+        // Table Info Array Init
         timeTableInfo = ArrayList()
         for(i in 0..22){
             var infoRow = ArrayList<LectureItem>()
@@ -114,7 +147,7 @@ class SearchActivity : AppCompatActivity() {
         dataList = ArrayList()
         dbHelper.importDB()
 
-        dataList = dbHelper.getList(null)
+        dataList = dbHelper.getList(null, "전체")
 
         listener = object: LectRecyclerViewAdapter.addListener{
             override fun addLecture(lect: LectureItem) {
@@ -172,8 +205,23 @@ class SearchActivity : AppCompatActivity() {
             val intent = Intent(this, FindMajorActivity::class.java)
             startActivityForResult(intent, REQUEST_MAJOR)
         }
+        search.setOnKeyListener {p0: View, p1: Int, p2: KeyEvent ->
+//            Log.v("Enter Key", p2.toString())
+            if((p2.action == KeyEvent.ACTION_DOWN) && (p1 == KeyEvent.KEYCODE_ENTER)){
+                var imm = p0.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(p0.windowToken, 0);
+                searchBtn.callOnClick()
+                true
+            } else {
+                false
+            }
+        }
+
 
         searchBtn.setOnClickListener {
+            var imm = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus?.windowToken, 0);
+
             var lectNum = search.text.toString()
 
             var checked = findViewById<RadioButton>(radioGroup.checkedRadioButtonId)
@@ -187,9 +235,8 @@ class SearchActivity : AppCompatActivity() {
             Log.v("Radio Button", mode)
 
             if(lectNum != ""){
-                dataList = dbHelper.search(lectNum, mode)
+                dataList = dbHelper.search(lectNum, mode, majorCode, pobtDiv)
 //                Log.v("result", result.toString())
-                major.text = dataList[0].major
                 search.text.clear()
                 adapter = LectRecyclerViewAdapter(this, dataList, listener)
                 recyclerView.adapter = adapter
@@ -382,9 +429,13 @@ class SearchActivity : AppCompatActivity() {
         if(requestCode == REQUEST_MAJOR){
             if(resultCode == Activity.RESULT_OK){
                 majorName = data!!.getStringExtra("major")
-                majorCode = data.getStringExtra("major_code")
+                if(majorName == "전체대학"){
+                    majorCode = ""
+                } else {
+                    majorCode = data.getStringExtra("major_code")
+                }
                 major.text = majorName
-                dataList = dbHelper.getList(majorCode)
+                dataList = dbHelper.getList(majorCode, pobtDiv)
                 adapter = LectRecyclerViewAdapter(this, dataList, listener)
                 recyclerView.adapter = adapter
             }

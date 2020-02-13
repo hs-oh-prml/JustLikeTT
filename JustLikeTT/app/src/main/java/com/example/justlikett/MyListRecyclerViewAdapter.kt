@@ -1,23 +1,26 @@
 package com.example.justlikett
 
 import android.content.Context
+import android.graphics.Color
+import android.util.DisplayMetrics
 import android.util.Log
+import android.view.Gravity.CENTER
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.RadioButton
-import android.widget.TextView
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.activity_search.view.*
 
 class MyListRecyclerViewAdapter (
     val context: Context,
-    var items:ArrayList<LectureItem>
+    var items:ArrayList<LectureItem>,
+    var scoreList:ArrayList<Double>
 ): RecyclerView.Adapter<MyListRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(context)
-            .inflate(R.layout.item_lecture, parent, false)
+            .inflate(R.layout.item_my_list, parent, false)
         return ViewHolder(v)
     }
 
@@ -28,6 +31,11 @@ class MyListRecyclerViewAdapter (
     }
 
     var lastSelectedPosition = -1
+
+
+    var score = ""
+
+    fun getScore():ArrayList<Double> = scoreList
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
@@ -55,6 +63,46 @@ class MyListRecyclerViewAdapter (
 
         holder.grade.text = data.grade + "학년"
         holder.pobtDiv.text= data.pobtDiv
+
+        holder.scoreView.setOnCheckedChangeListener { radioGroup, i ->
+            score = radioGroup.findViewById<RadioButton>(i).text.toString()
+            when(score){
+                "A+"->{
+                    scoreList[position] = 4.5
+                }
+                "A"->{
+                    scoreList[position] = 4.0
+                }
+                "B+"->{
+                    scoreList[position] = 3.5
+                }
+                "B"->{
+                    scoreList[position] = 3.0
+                }
+                "C+"->{
+                    scoreList[position] = 2.5
+                }
+                "C"->{
+                    scoreList[position] = 2.0
+                }
+                "D+"->{
+                    scoreList[position] = 1.5
+                }
+                "D"->{
+                    scoreList[position] = 1.0
+                }
+                "F"->{
+                    scoreList[position] = 0.0
+                }
+                "P"->{
+                    scoreList[position] = -1.0
+                }
+                "NP"->{
+                    scoreList[position] = -1.0
+                }
+            }
+            Log.v("score", score)
+        }
 
 //
 //        holder.itemView.setOnClickListener {
@@ -88,9 +136,11 @@ class MyListRecyclerViewAdapter (
         var pobtDiv:TextView
         var credit:TextView
         var lectNum:TextView
+
+        var scoreView: RadioGroup
         init {
             frame = itemView.findViewById(R.id.frame)
-            addBtn = itemView.findViewById(R.id.add_btn)
+            addBtn = itemView.findViewById(R.id.delete_btn)
             radio = itemView.findViewById(R.id.radioBtn)
             itemView.setOnClickListener {
                 lastSelectedPosition = adapterPosition
@@ -104,6 +154,20 @@ class MyListRecyclerViewAdapter (
             pobtDiv = itemView.findViewById(R.id.pobtDiv)
             credit = itemView.findViewById(R.id.credit)
             lectNum = itemView.findViewById(R.id.lectNum)
+
+            scoreView = itemView.findViewById(R.id.score)
+            var scoreArray = context.resources.getStringArray(R.array.score)
+
+            for(i in scoreArray){
+                var rb = RadioButton(context)
+                rb.setTextColor(context.getColor(R.color.white))
+                rb.text = i
+                rb.gravity = CENTER
+                rb.setButtonDrawable(android.R.color.transparent)
+                rb.setBackgroundResource(R.drawable.selector)
+
+                scoreView.addView(rb)
+            }
         }
     }
 

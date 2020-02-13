@@ -20,6 +20,32 @@
         <item>#CCDBE2</item>
         <item>#C9CBE0</item>
         <item>#FDF2F0</item>
+    </string-array>
 
+    <string name="prompt">이수구분</string>
+    <string-array name="pobtDiv">
+        <item>전체</item>
+        <item>지필</item>
+        <item>지교</item>
+        <item>전필</item>
+        <item>전선</item>
+        <item>심교</item>
+        <item>기교</item>
+        <item>일선</item>
+        <item>교직</item>
+    </string-array>
+
+    <string-array name="score">
+        <item>A+</item>
+        <item>A</item>
+        <item>B+</item>
+        <item>B</item>
+        <item>C+</item>
+        <item>C</item>
+        <item>D+</item>
+        <item>D</item>
+        <item>F</item>
+        <item>P</item>
+        <item>NP</item>
     </string-array>
 </resources>

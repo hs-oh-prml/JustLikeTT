@@ -74,20 +74,35 @@ class DBHelper (var context: Context) : SQLiteOpenHelper(context, DATABASE_NAME,
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
     }
 
-    fun getList(departCode:String?):ArrayList<LectureItem>{
+    fun getList(departCode:String?, s_pobtDiv:String):ArrayList<LectureItem>{
         val lectArrayList = ArrayList<LectureItem>()
         val db = readableDatabase
 
         var query = ""
-        var arg = arrayOf("%${departCode}%")
+        var arg:Array<String>
         val cursor: Cursor
+
         if(departCode != null){
-            query = "SELECT * FROM ${Lecture.TABLE_NAME} WHERE majorCode LIKE ?"
+            if(s_pobtDiv == "전체"){
+                arg = arrayOf("%${departCode}%")
+                query = "SELECT * FROM ${Lecture.TABLE_NAME} WHERE majorCode LIKE ?"
+            } else {
+                arg = arrayOf("%${departCode}%", "%${s_pobtDiv}%")
+                query = "SELECT * FROM ${Lecture.TABLE_NAME} WHERE majorCode LIKE ? and pobtDiv LIKE ?"
+            }
             cursor = db.rawQuery(query, arg)
 
         } else {
-            query = "SELECT * FROM ${Lecture.TABLE_NAME}"
-            cursor = db.rawQuery(query, null)
+            if(s_pobtDiv == "전체"){
+                query = "SELECT * FROM ${Lecture.TABLE_NAME}"
+                cursor = db.rawQuery(query, null)
+
+            } else {
+                arg = arrayOf("%${s_pobtDiv}%")
+                query = "SELECT * FROM ${Lecture.TABLE_NAME} WHERE pobtDiv LIKE ?"
+                cursor = db.rawQuery(query, arg)
+
+            }
         }
 
         Log.d("SQL", query)
@@ -116,13 +131,29 @@ class DBHelper (var context: Context) : SQLiteOpenHelper(context, DATABASE_NAME,
         return lectArrayList
     }
 
-    fun search(keyword:String, mode:String):ArrayList<LectureItem>{
+    fun search(keyword:String, mode:String, majorCode:String, pobtDiv:String):ArrayList<LectureItem>{
         val lectArrayList = ArrayList<LectureItem>()
         val db = readableDatabase
 
-        var arg = arrayOf(keyword)
-        var query = "SELECT * FROM ${Lecture.TABLE_NAME} WHERE ${mode} = ?"
-
+        var arg:Array<String>
+        var query = ""
+        if(majorCode == ""){
+            if(pobtDiv == "전체"){
+                arg = arrayOf("%${keyword}%")
+                query = "SELECT * FROM ${Lecture.TABLE_NAME} WHERE ${mode} LIKE ?"
+            } else {
+                arg = arrayOf("%${keyword}%", "%${pobtDiv}")
+                query = "SELECT * FROM ${Lecture.TABLE_NAME} WHERE ${mode} LIKE ? AND pobtDiv LIKE ?"
+            }
+        } else {
+            if(pobtDiv == "전체"){
+                arg = arrayOf("%${keyword}%", "%${majorCode}%")
+                query = "SELECT * FROM ${Lecture.TABLE_NAME} WHERE ${mode} LIKE ? AND majorCode LIKE ?"
+            } else {
+                arg = arrayOf("%${keyword}%", "%${majorCode}%", "%${pobtDiv}")
+                query = "SELECT * FROM ${Lecture.TABLE_NAME} WHERE ${mode} LIKE ? AND majorCode LIKE ? AND pobtDiv LIKE ?"
+            }
+        }
         Log.d("SQL", query)
         val cursor = db.rawQuery(query, arg)
         Log.d("SQL RESULT", cursor.count.toString())
