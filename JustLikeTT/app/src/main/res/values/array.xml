@@ -1,13 +1,15 @@
 <resources>
     <string-array name="colorList">
-        <item>#FADCDA</item>
         <item>#ECD4D4</item>
+        <item>#FADCDA</item>
+        <item>#C5DAD1</item>
+        <item>#D5CB8E</item>
         <item>#BFC8D7</item>
-        <item>#EEB8B8</item>
         <item>#A2B59F</item>
+        <item>#E8E7D2</item>
+        <item>#EEB8B8</item>
         <item>#E2D2D2</item>
         <item>#E3E2B4</item>
-        <item>#E8E7D2</item>
         <item>#EFEFF1</item>
         <item>#D2D5B8</item>
         <item>#BDC2BB</item>
@@ -15,8 +17,6 @@
         <item>#F0E4D4</item>
         <item>#F9D9CA</item>
         <item>#D18063</item>
-        <item>#C5DAD1</item>
-        <item>#D5CB8E</item>
         <item>#CCDBE2</item>
         <item>#C9CBE0</item>
         <item>#FDF2F0</item>

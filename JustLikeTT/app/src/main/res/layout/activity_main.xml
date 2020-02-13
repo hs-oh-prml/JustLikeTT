@@ -7,21 +7,16 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity"
     android:orientation="vertical"
-
     >
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.tabs.TabLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tabLayout"
+        />
+    <androidx.viewpager2.widget.ViewPager2
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="5dp"
-        app:cardCornerRadius="15dp"
-        >
-        <GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/timeTable"
-            android:orientation="horizontal"
-            android:background="@color/border"
-            />
-    </androidx.cardview.widget.CardView>
+        android:id="@+id/viewPager"
+        />
 
 </LinearLayout>
