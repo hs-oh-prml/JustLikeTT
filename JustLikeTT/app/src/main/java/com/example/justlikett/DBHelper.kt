@@ -16,7 +16,7 @@ import kotlin.collections.ArrayList
 
 class DBHelper (var context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
-    val DB_NAME = "lecture.mp3"
+    val DB_NAME = "lecture.db"
     override fun onCreate(db: SQLiteDatabase) {
 //
 //        var dbFile = context.getDatabasePath(DB_NAME)
@@ -48,8 +48,8 @@ class DBHelper (var context: Context) : SQLiteOpenHelper(context, DATABASE_NAME,
     }
     @SuppressLint("WrongConstant")
     fun copyDatabase(){
-        var dbFile = context.getDatabasePath("lecture.mp3")
-        val inputStream = context.assets.open("lecture.mp3")
+        var dbFile = context.getDatabasePath(DB_NAME)
+        val inputStream = context.assets.open(DB_NAME)
         var outputStream = FileOutputStream(dbFile)
         val buffer = ByteArray(1024)
         while(inputStream.read(buffer) > 0){
@@ -256,7 +256,7 @@ class DBHelper (var context: Context) : SQLiteOpenHelper(context, DATABASE_NAME,
     companion object {
         // If you change the database schema, you must increment the database version.
         const val DATABASE_VERSION = 1
-        const val DATABASE_NAME = "lecture.mp3"
+        const val DATABASE_NAME = "lecture.db"
 
         val SQL_CREATE_ENTRIES = "CREATE TABLE " + Lecture.TABLE_NAME + " (" +
                 BaseColumns._ID + " INTEGER PRIMARY KEY," +
