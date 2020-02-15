@@ -101,7 +101,7 @@ class MainActivity : FragmentActivity() {
 
                 }
                 else->{
-                    return EtcFragment()
+                    return EtcFragment(applicationContext)
                 }
             }
 
