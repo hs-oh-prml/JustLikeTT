@@ -181,6 +181,45 @@ class DBHelper (var context: Context) : SQLiteOpenHelper(context, DATABASE_NAME,
         return lectArrayList
     }
 
+    fun search2(lectName:String, professor:String):ArrayList<LectureItem>{
+        val lectArrayList = ArrayList<LectureItem>()
+        val db = readableDatabase
+
+        var arg:Array<String>
+        var query = ""
+
+        if(professor == ""){
+            arg = arrayOf("%${lectName}%")
+            query = "SELECT * FROM ${Lecture.TABLE_NAME} WHERE lectName LIKE ?"
+        } else {
+            arg = arrayOf("%${lectName}%", "%${professor}")
+            query = "SELECT * FROM ${Lecture.TABLE_NAME} WHERE lectName LIKE ? AND professor LIKE ?"
+        }
+
+        val cursor = db.rawQuery(query, arg)
+
+        if(cursor != null){
+            if(cursor.moveToFirst()){
+                do {
+                    val grade = cursor.getString(cursor.getColumnIndex(Lecture.COLUMN_NAME_GRADE))
+                    var classCode = cursor.getString(cursor.getColumnIndex(Lecture.COLUMN_NAME_CLASSCODE))
+                    var pobtDiv = cursor.getString(cursor.getColumnIndex(Lecture.COLUMN_NAME_POBTDIV))
+                    var lectNum = cursor.getString(cursor.getColumnIndex(Lecture.COLUMN_NAME_LECTNUM))
+                    var lectName = cursor.getString(cursor.getColumnIndex(Lecture.COLUMN_NAME_LECTNAME))
+                    var credit = cursor.getString(cursor.getColumnIndex(Lecture.COLUMN_NAME_CREDIT))
+                    var lectHour = cursor.getString(cursor.getColumnIndex(Lecture.COLUMN_NAME_LECTHOUR))
+                    var major = cursor.getString(cursor.getColumnIndex(Lecture.COLUMN_NAME_MAJOR))
+                    var timeNroom = cursor.getString(cursor.getColumnIndex(Lecture.COLUMN_NAME_TIMENROOM))
+
+                    var professor = cursor.getString(cursor.getColumnIndex(Lecture.COLUMN_NAME_PROFESSOR))
+                    var data = LectureItem(grade, classCode, pobtDiv, lectNum, lectName,credit, lectHour, major, timeNroom, professor)
+                    lectArrayList.add(data)
+                } while (cursor.moveToNext())
+            }
+        }
+        return lectArrayList
+    }
+
     fun getMajor(): ArrayList<ArrayList<MajorItem>> {
         var result = ArrayList<ArrayList<MajorItem>>()
 

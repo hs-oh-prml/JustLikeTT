@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 
 class EtcRecyclerViewAdapter(
@@ -53,10 +54,37 @@ class EtcRecyclerViewAdapter(
             timeNroom += i.replace(" ", "") + " "
         }
         holder.timeNroom.text = timeNroom
-
-
         holder.grade.text = data.grade + "학년"
         holder.pobtDiv.text= data.pobtDiv
+
+        holder.star_off.setOnClickListener {
+            it.visibility = View.GONE
+            holder.star_on.visibility = View.VISIBLE
+        }
+
+        holder.star_on.setOnClickListener {
+            it.visibility = View.GONE
+            holder.star_off.visibility = View.VISIBLE
+        }
+
+        holder.delBtn.setOnClickListener {
+            //TODO
+        }
+
+        if(position == lastSelectedPosition){
+            holder.radio.isChecked = true
+            holder.frame.setBackgroundResource(R.color.selected_item)
+            holder.delBtn.visibility = View.VISIBLE
+
+//            Log.d("last", lastData.toString())
+//            if(lastData.lectNum != data.lectNum && lastData.lectNum != "-1"){
+//                listener.choiceCancel(lastData)
+//            }
+        } else {
+            holder.radio.isChecked = false
+            holder.frame.setBackgroundResource(R.color.white)
+            holder.delBtn.visibility = View.GONE
+        }
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
